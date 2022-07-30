@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.constraints.Digits;
 import java.math.BigDecimal;
 import java.util.HashMap;
-
+// test commit
 @RestController
 @CrossOrigin("*")
 public class CalculatorController {
