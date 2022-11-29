@@ -55,7 +55,7 @@ public class UsedCarsController {
     private SpecBuilder specBuilder;
 
 
-    private final int PAGE_SIZE = 4;
+    private final int PAGE_SIZE = 24;
 
 
     // unda movides ?page=0 parametrit  defaultad sorti aris desci asc miuweros.
@@ -92,6 +92,7 @@ public class UsedCarsController {
                     .intColor((String) objects[9])
                     .hp((double) objects[10])
                     .engine((String) objects[11])
+                    .isSold((boolean) objects[12])
                     .build();
             model.ifPresent(usedCarModel -> car.setModel(usedCarModel.getModelName()));
             return car;
@@ -175,6 +176,7 @@ public class UsedCarsController {
                         .id(usedCar.getId())
                         .year(usedCar.getYear())
                         .transmission(usedCar.getTransmission())
+                        .isSold(usedCar.isSold())
                         .build()).collect(Collectors.toList());
 
 
@@ -249,7 +251,9 @@ public class UsedCarsController {
                                                   @ApiParam(value = "გადაცემათა კოლოფი: manual,automatic", required = true)
                                                           String tran,
                                               @RequestParam(value = "file",required = false)
-                                                  @ApiParam(value = "გამოსაჩენი ფოტო") MultipartFile displayPhoto)
+                                                  @ApiParam(value = "გამოსაჩენი ფოტო") MultipartFile displayPhoto
+                                              //@RequestParam() boolean isSold
+    )
      {
 
 
@@ -265,6 +269,7 @@ public class UsedCarsController {
         car.setEngine(engine);
         car.setIntColor(intColor);
         car.setHp(hp);
+        car.setSold(false); //issold
 
 
 
@@ -303,6 +308,7 @@ public class UsedCarsController {
             @RequestParam("files")
             @ApiParam(value = "სვაგერ 2-ს არაქვს მხარდაჭერა ფაილების ლისტის გასაგზავნად, მივა ცარიელი ან ერორი", required = true)
                     ArrayList<MultipartFile> files
+            //@RequestParam() boolean isSold
             //@RequestParam("features") ArrayList<String> features,
             //@RequestParam("featuresGEO") ArrayList<String> featuresGEO
 
@@ -310,7 +316,8 @@ public class UsedCarsController {
     ) throws IOException {
 
 
-        return ResponseEntity.ok(usedCarService.create(extColor, intColor, hp, engine, modelid, price, year, mileage, door, type, fuel,
-                tran, displayFile, files));
+        return ResponseEntity.ok(
+                usedCarService.create(extColor, intColor, hp, engine, modelid, price, year, mileage, door, type, fuel,
+                tran, displayFile, files, false)); //issold
     }
 }

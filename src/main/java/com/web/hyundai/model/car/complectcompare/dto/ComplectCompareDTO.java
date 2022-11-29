@@ -1,12 +1,12 @@
 package com.web.hyundai.model.car.complectcompare.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.web.hyundai.model.car.complectcompare.ComplectCompare;
-import com.web.hyundai.model.car.complectcompare.ComplectCompareFeature;
+import com.web.hyundai.model.car.complectcompare.ComplectCompareTitle;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,64 +15,70 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Transactional
 public class ComplectCompareDTO {
     private Long id;
     private String image1;
     private String image2;
     private Long carId;
-    private List<ComplectCompareFeatureDTO> complectCompareFeatureList = new ArrayList<>();
+    private String pdf;
+    private List<ComplectCompareTitleDTO> compareTitles = new ArrayList<>();
+    @JsonProperty("complectDTO")
+    private List<EngineDTO> engineDTO = new ArrayList<>();
 
 
-    public static ComplectCompareDTO from(ComplectCompare complectCompare) {
-        System.out.println("FEATURE? ++ " + complectCompare.getComplectCompareFeatureList());
-        List<ComplectCompareFeature> feature = complectCompare.getComplectCompareFeatureList();
-        List<ComplectCompareFeatureDTO> featureDTO = fromFeature(feature);
+    public static ComplectCompareDTO from(ComplectCompare complectCompare, String file) {
+        List<ComplectCompareTitleDTO> titlesDTos = fromTitle(complectCompare);
+
         return ComplectCompareDTO.builder()
                 .id(complectCompare.getId())
                 .image1(complectCompare.getImage1())
                 .image2(complectCompare.getImage2())
-                .carId(complectCompare.getId())
-                .complectCompareFeatureList(featureDTO)
+                .carId(complectCompare.getCar().getId())
+                .compareTitles(titlesDTos)
+                .pdf(file)
                 .build();
     }
 
-    public static List<ComplectCompareDTO> from(List<ComplectCompare> complectCompare) {
-        List<ComplectCompareDTO> newList = new ArrayList<>();
-        complectCompare.forEach(each -> {
-            List<ComplectCompareFeature> feature = each.getComplectCompareFeatureList();
-            List<ComplectCompareFeatureDTO> featureDTO = fromFeature(feature);
-            newList.add(ComplectCompareDTO.builder()
-                    .id(each.getId())
-                    .image1(each.getImage1())
-                    .image2(each.getImage2())
-                    .carId(each.getId())
-                    .complectCompareFeatureList(featureDTO)
-                    .build());
+    private static List<ComplectCompareTitleDTO> fromTitle(ComplectCompare complectCompare) {
+        List<ComplectCompareTitle> titles = complectCompare.getComplectCompareTitles();
+        List<ComplectCompareTitleDTO> titlesDTos = new ArrayList<>();
+
+        titles.forEach(t -> {
+            List<ComplectCompareFeatureDTO> featureDTOS = new ArrayList<>();
+
+            t.getComplectCompareFeatures().forEach(f -> {
+
+                ComplectCompareFeatureDTO.ComplectCompareFeatureDTOBuilder build =
+                        ComplectCompareFeatureDTO.builder()
+                                .value(f.getValue())
+                                .id(f.getId());
+                if (null != f.getEngine()) build.engineId(f.getEngine().getId());
+                featureDTOS.add(build.build());
+            });
+
+            titlesDTos.add(
+                    ComplectCompareTitleDTO.builder()
+                            .id(t.getId())
+                            .locale(t.getLocale())
+                            .orderId(t.getOrderId())
+                            .title(t.getTitle())
+                            .complectCompareFeatures(featureDTOS)
+                            .build()
+            );
+
         });
-        return newList;
+        return titlesDTos;
     }
 
-
-    public static List<ComplectCompareFeatureDTO> fromFeature(List<ComplectCompareFeature> feature) {
-        List<ComplectCompareFeatureDTO> featureDTO = new ArrayList<>();
-        if (feature != null) {
-            feature.forEach(c -> featureDTO.add(ComplectCompareFeatureDTO.builder()
-                    .id(c.getId())
-                    .title(c.getTitle())
-                    .value(c.getValue())
-                    .orderId(c.getOrderId())
-                    .build()));
-        }
-        return featureDTO;
-    }
-
-    public static ComplectCompareFeatureDTO from(ComplectCompareFeature c) {
-        return ComplectCompareFeatureDTO.builder()
+    public static List<ComplectCompareDTO> from(List<ComplectCompare> all) {
+        ArrayList<ComplectCompareDTO> list = new ArrayList<>();
+        all.forEach(c -> list.add(ComplectCompareDTO.builder()
                 .id(c.getId())
-                .title(c.getTitle())
-                .value(c.getValue())
-                .orderId(c.getOrderId())
-                .build();
+                .image1(c.getImage1())
+                .image2(c.getImage2())
+                .carId(c.getCar().getId())
+                .compareTitles(fromTitle(c))
+                .build()));
+        return list;
     }
 }

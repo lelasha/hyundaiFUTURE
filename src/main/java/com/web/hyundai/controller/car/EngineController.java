@@ -178,9 +178,9 @@ public class EngineController {
 
     @PostMapping(path = "/admin/car-engine/desc/create/{engineid}/{iconId}", produces = "application/json;**charset=UTF-8**")
     public ResponseEntity<?> createEngineDesc(@PathVariable Long engineid,
+                                              @PathVariable Long iconId,
                                               @RequestParam String name,
-                                              @RequestParam String nameGEO,
-                                              @RequestParam Long iconId){
+                                              @RequestParam String nameGEO){
         Optional<Engine> engine = engineRepo.findById(engineid);
         Optional<EngineDescIcon> icon = engineDescIconRepo.findById(iconId);
         if (engine.isPresent() && icon.isPresent()) {

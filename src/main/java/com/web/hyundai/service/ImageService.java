@@ -23,12 +23,12 @@ public class ImageService {
 
 
     public String uploadNewDir(MultipartFile file, String folder) throws IOException {
-        File directory = new File(Path.folderPath() + folder.replaceAll(" ",""));
+        String folderNonSpace = folder.replaceAll("\\s+","");
+        File directory = new File(Path.folderPath() + folderNonSpace);
         System.out.println(directory + "  ++++++++");
         boolean dir = true;
-        FileUpload img = null;
         if (!directory.exists()) dir = directory.mkdirs();
-        if (dir) return folder + uploadImage(file, folder).getFile().getName();
+        if (dir) return folderNonSpace + uploadImage(file, folderNonSpace).getFile().getName();
         return "null";
     }
 
@@ -37,7 +37,7 @@ public class ImageService {
         String randomId = generateUUID();
         String[] splitedName = Objects.requireNonNull(file.getOriginalFilename()).split("\\.");
         String hashedName = splitedName[0] + "-" + randomId + "." + splitedName[1];
-        String path = Path.folderPath() + folder + Objects.requireNonNull(hashedName.replace(" ",""));
+        String path = Path.folderPath() + folder.replaceAll("\\s+","") + Objects.requireNonNull(hashedName.replaceAll("\\s+",""));
 
         File serverFile = new File(path);
         BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(serverFile));
@@ -61,7 +61,7 @@ public class ImageService {
 
     public String thumbnail(String path, String name, String randomId, String ext, String folder) throws IOException {
 
-        name = name.replace(" ","".replace(" ",""));
+        name = name.replaceAll("\\s+", "");
         String newPath = folder + "thumbnail-" + name.split("\\.")[0] + "-" + randomId + "." + ext;
 
 
@@ -85,7 +85,7 @@ public class ImageService {
         String[] nameArray = file.getOriginalFilename().split("\\.");
 
 
-        String newPath = folder + "thumbnail-" + nameArray[0].replace(" ","") + "-parse-" + generateUUID() + "." + nameArray[1];
+        String newPath = folder + "thumbnail-" + nameArray[0].replaceAll("\\s+","") + "-parse-" + generateUUID() + "." + nameArray[1];
 
 
         BufferedImage img = new BufferedImage(536, 363, BufferedImage.TYPE_INT_RGB);
@@ -98,7 +98,7 @@ public class ImageService {
 
 
     public void uploadFile(String folder, MultipartFile file) throws IOException {
-        File serverFile = new File(Path.folderPath() + folder + file.getOriginalFilename().replace(" ",""));
+        File serverFile = new File(Path.folderPath() + folder + file.getOriginalFilename().replaceAll("\\s+",""));
         BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(serverFile));
         stream.write(file.getBytes());
         stream.close();

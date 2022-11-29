@@ -20,6 +20,7 @@ public class UsedCarWeb {
     private double hp;
     private String displayPhoto;
     private String transmission;
+    private boolean isSold;
 
     public UsedCarWeb(Long id, Integer price, int year, Integer mileage, String fuel, String extColor, String intColor, String engine, double hp, String displayPhoto, String transmission) {
         this.id = id;

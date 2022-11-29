@@ -8,6 +8,7 @@ import com.web.hyundai.model.car.FuelUsage;
 import com.web.hyundai.model.car.Photo360;
 import com.web.hyundai.model.car.modif.*;
 import com.web.hyundai.model.car.modif.web.EngineWithComplectWeb;
+import com.web.hyundai.model.car.web.EngineWrep;
 import com.web.hyundai.repo.car.CarRepo;
 import com.web.hyundai.repo.car.EngineRepo;
 import com.web.hyundai.repo.car.Photo360Repo;
@@ -17,18 +18,19 @@ import com.web.hyundai.repo.car.modif.ComplectInterierRepo;
 import com.web.hyundai.repo.car.modif.ComplectParamRepo;
 import com.web.hyundai.service.ComplectService;
 import com.web.hyundai.service.ImageService;
+import com.web.hyundai.service.car.CarBuildService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @Api(tags = "Car Complect")
@@ -63,23 +65,42 @@ public class ComplectController {
     @Autowired
     CarRepo carRepo;
 
+    @Autowired
+    CarBuildService carBuildService;
+
 
 
     @GetMapping(path = "/api/car/complect/getallengine/{carid}", produces = "application/json;**charset=UTF-8**")
-    public ResponseEntity<List<EngineWithComplectWeb>> getAllEngineWithComplect(@PathVariable Long carid) {
-        List<EngineWithComplectWeb> complectInfo = new ArrayList<>();
-        engineRepo.findAllEnginesWithComplect(carid).forEach(o -> {
-            complectInfo.add(new EngineWithComplectWeb(Long.valueOf(o[0].toString()), o[2].toString(), o[1].toString(),
-                    o[4].toString(), Long.valueOf(o[3].toString())));
-        });
-        return ResponseEntity.ok(complectInfo);
+    public ResponseEntity<?> getAllEngineWithComplect(@PathVariable Long carid) {
+        Optional<Car> car = carRepo.findById(carid);
+        if (car.isPresent()) {
+            List<EngineWrep> eng = carBuildService.engineBuild("random", car.get(), "engine");
+            List<EngineWithComplectWeb> eng1List = new ArrayList<>();
+            eng.forEach(engineWrep -> {
+                EngineWithComplectWeb eng1 = new EngineWithComplectWeb();
+                eng1.setEngineId(engineWrep.getEngineId());
+                eng1.setComplectId(engineWrep.getEngineId()); // we don't need complect id
+                eng1.setComplectName(engineWrep.getEngineTitle()); // we don't need complect name
+                eng1.setEngineTitle(engineWrep.getEngineTitle());
+                eng1.setPrice(String.valueOf(engineWrep.getPrice()));
+                eng1List.add(eng1);
+            });
+
+            if (eng.size() > 0) return ResponseEntity.ok(eng1List);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ასეთი მანქანა ვერ მოიძებნა ან ამ მანქანაზე მიმაგრებული ძრავი");
     }
 
 
+    @GetMapping(path = "/admin/car/complect/list/{carId}", produces = "application/json;**charset=UTF-8**")
+    public ResponseEntity<Set<Long>> getAllComplectByCarId(@PathVariable Long carId) {
+        List<EngineWithComplectWeb> complectInfo = getEngineWithComplectsByCarId(carId);
 
-
-
-
+        return ResponseEntity.ok(complectInfo.stream()
+                .filter(engine -> Objects.nonNull(engine.getComplectId()))
+                .map(EngineWithComplectWeb::getComplectId)
+                .collect(Collectors.toSet()));
+    }
 
     @GetMapping(path = "/api/car/complect/getcomplect/{complectid}", produces = "application/json;**charset=UTF-8**")
     public ResponseEntity<?> getSingleComplect(
@@ -281,5 +302,12 @@ public class ComplectController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ასეთი კომპლექტაცია ვერ მოიძებნა");
     }
 
-
+    private List<EngineWithComplectWeb> getEngineWithComplectsByCarId(@PathVariable Long carid) {
+        List<EngineWithComplectWeb> complectInfo = new ArrayList<>();
+        engineRepo.findAllEnginesWithComplect(carid).forEach(o -> {
+            complectInfo.add(new EngineWithComplectWeb(Long.valueOf(o[0].toString()), o[2].toString(), o[1].toString(),
+                    o[4].toString(), Long.valueOf(o[3].toString())));
+        });
+        return complectInfo;
+    }
 }

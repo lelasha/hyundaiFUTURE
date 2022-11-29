@@ -12,7 +12,7 @@ public interface UsedCarRepo extends JpaRepository<UsedCar,Long>, JpaSpecificati
 
 
 
-    @Query(value="select id,model_id,price,year,mileage,fuel,ext_color,display_photo,transmission,int_color,hp,engine from used_car"
+    @Query(value="select id,model_id,price,year,mileage,fuel,ext_color,display_photo,transmission,int_color,hp,engine,is_sold from used_car"
     ,nativeQuery = true)
     List<Object[]> findallCarWeb(Pageable firstPageWithTwoElements);
 

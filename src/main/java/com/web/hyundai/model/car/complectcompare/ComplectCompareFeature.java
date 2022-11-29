@@ -1,11 +1,10 @@
 package com.web.hyundai.model.car.complectcompare;
 
+import com.web.hyundai.model.car.Engine;
+import com.web.hyundai.model.car.modif.CarComplect;
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 @Getter
@@ -18,8 +17,7 @@ public class ComplectCompareFeature {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String title;
     private String value;
-    private String locale;
-    private int orderId;
+    @OneToOne
+    private Engine engine;
 }

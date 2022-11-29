@@ -33,6 +33,7 @@ public class UsedCar {
     private String engine;
     private double hp;
     private String displayPhoto;
+    private boolean isSold;
     @LastModifiedDate
     private Date date;
 

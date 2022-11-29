@@ -34,7 +34,7 @@ public class CarComplect {
     @JoinColumn(name = "complect_id")
     @JsonView(View.Summary.class)
     private Set<ComplectParam> complectParams = new HashSet<>();
-    @OneToMany(cascade = CascadeType.REMOVE)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "complect_id")
     //@Fetch(FetchMode.JOIN)
     @JsonIgnore

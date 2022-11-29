@@ -17,7 +17,7 @@ public class CalculatorController {
 
 
     @GetMapping("/api/car/calculator/first")
-    private HashMap<String, String> calculateCost(
+    public HashMap<String, String> calculateCost(
             @RequestParam("fuelConsumption")
             @Digits(integer = 2,fraction = 0,message = "მაქსიმალური ციფრების რაოდენობა 2 ფორმატი განაყოფით 0") Integer fuelConsumption,
             @RequestParam("fuelCost")
@@ -38,7 +38,7 @@ public class CalculatorController {
 
 
     @GetMapping("/api/car/calculator/second")
-    private Calculator calculateCost(
+    public Calculator calculateCost(
             @RequestParam("watCost")
             @Digits(integer = 2, fraction = 2, message = "მაქსიმალური ციფრების რაოდენობა 2 ფორმატი განაყოფით 2") double watCost
     ){

@@ -8,6 +8,7 @@ import com.web.hyundai.model.Path;
 import com.web.hyundai.model.news.News;
 import com.web.hyundai.model.news.Subscribe;
 import com.web.hyundai.repo.car.CarRepo;
+import com.web.hyundai.repo.news.NewsGalleryRepo;
 import com.web.hyundai.repo.news.NewsRepo;
 import com.web.hyundai.service.ImageService;
 import com.web.hyundai.service.car.CarBuildService;
@@ -37,7 +38,8 @@ public class NewsService {
 
     @Autowired
     private NewsRepo newsRepo;
-
+    @Autowired
+    private NewsGalleryRepo newsGalleryRepo;
     @Autowired
     private ImageService imageService;
     @Autowired
@@ -59,6 +61,8 @@ public class NewsService {
 
             if (image.exists()) image.delete();
             if (thumbnail.exists()) thumbnail.delete();
+
+            newsGalleryRepo.findAllByBlogId(id).forEach(i -> newsGalleryRepo.deleteById(i.getId()));
 
             newsRepo.deleteById(id);
             return "წარმატებით წაიშალა";

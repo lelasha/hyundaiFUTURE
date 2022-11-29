@@ -2,6 +2,8 @@ package com.web.hyundai.model.car.complectcompare;
 
 import com.web.hyundai.model.car.Car;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -27,6 +29,8 @@ public class ComplectCompare {
     private Car car;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "compare_id")
-    private List<ComplectCompareFeature> complectCompareFeatureList = new ArrayList<>();
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<ComplectCompareTitle> complectCompareTitles = new ArrayList<>();
+
 
 }

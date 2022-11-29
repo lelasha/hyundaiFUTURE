@@ -60,13 +60,13 @@ public class UsedCarService {
                           String fuel,
                           String tran,
                           MultipartFile displayFile,
-                          ArrayList<MultipartFile> files
+                          ArrayList<MultipartFile> files,
 
 //                          ArrayList<String> features,
- //                         ArrayList<String> featuresGEO
+                          //                         ArrayList<String> featuresGEO
 
 
-    ) throws IOException {
+                          boolean isSold) throws IOException {
 
 //        Set<UsedCarFeature> featuresList = new HashSet<>();
 //        if (features.size() == featuresGEO.size()) {
@@ -95,6 +95,7 @@ public class UsedCarService {
         usedCar.setType(type);
         usedCar.setYear(Integer.parseInt(year));
         usedCar.setDisplayPhoto(imageService.thumbnailFromImage(displayFile, folder));
+        usedCar.setSold(isSold);
         //featureRepo.saveAll(featuresList);
         //usedCar.setUsedCarFeatures(featuresList);
         Set<UsedCarPhoto> usedCarPhotos = new HashSet<>();
@@ -167,6 +168,7 @@ public class UsedCarService {
             oldCar.setHp(updatedCars.getHp());
             oldCar.setIntColor(updatedCars.getIntColor());
             oldCar.setEngine(updatedCars.getEngine());
+            oldCar.setSold(updatedCars.isSold());
 
 
 
