@@ -225,7 +225,7 @@ public class ComplectController {
 
     ) throws IOException {
         //Set<ComplectParam> complectParamList = complectParamRepo.findAllByIdList(complectparam);
-        Optional<CarComplect> oldComplect = carComplectRepo.findById(complectid);
+        Optional<CarComplect> oldComplect = carComplectRepo.findByEngineId(complectid);
         Optional<Engine> engine = engineRepo.findById(engineid);
         List<Photo360> photos = photo360Repo.findAllByIdList(photoidlist);
         Set<CarTire> tires = carTireRepo.findAllByIdList(cartirelist);
@@ -284,7 +284,7 @@ public class ComplectController {
     @PostMapping(path = "/admin/car/complect/delete/{complectid}", produces = "application/json;**charset=UTF-8**")
     @Transactional
     public ResponseEntity<String> complectDelete(@PathVariable Long complectid) {
-        Optional<CarComplect> oldComplect = carComplectRepo.findById(complectid);
+        Optional<CarComplect> oldComplect = carComplectRepo.findByEngineId(complectid);
         if (oldComplect.isPresent()) {
 
            // oldComplect.get().getCarTires().forEach(carTire -> carTireRepo.deleteById(carTire.getId()));

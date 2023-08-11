@@ -12,9 +12,12 @@ import com.web.hyundai.repo.car.CarRepo;
 import com.web.hyundai.repo.car.EngineDescRepo;
 import com.web.hyundai.repo.car.EngineRepo;
 import com.web.hyundai.repo.car.modif.CarComplectRepo;
+import com.web.hyundai.repo.car.modif.ComplectCompareFeatureRepo;
+import com.web.hyundai.repo.car.modif.ComplectCompareRepo;
 import com.web.hyundai.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -41,6 +44,8 @@ public class EngineService {
     @Autowired
     CarComplectRepo carComplectRepo;
 
+    @Autowired
+    ComplectCompareFeatureRepo complectCompareFeatureRepo;
 
     public Engine createEngine(Long carid, String title, int price, int hp,
                                String city, String outCity, String hundred, String combined, MultipartFile image) throws IOException {
@@ -99,6 +104,7 @@ public class EngineService {
 
     }
 
+    @Transactional
     public String deleteEngine(Long engineId) {
         Optional<Engine> engine = engineRepo.findById(engineId);
         if (engine.isPresent()) {
@@ -106,6 +112,9 @@ public class EngineService {
             engineDescRepo.deleteAll(desc);
 
             carComplectRepo.findByEngineId(engineId).ifPresent(carComplect -> carComplectRepo.delete(carComplect));
+
+
+            complectCompareFeatureRepo.deleteByEngineId(engineId);
 
             engineRepo.deleteById(engineId);
 

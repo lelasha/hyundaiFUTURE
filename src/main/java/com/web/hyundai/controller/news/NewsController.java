@@ -21,6 +21,7 @@ import com.web.hyundai.service.car.CarBuildService;
 import com.web.hyundai.service.news.NewsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -45,7 +46,7 @@ import java.util.stream.Stream;
 @RestController
 @Api(tags = "News")
 @CrossOrigin("*")
-
+@Slf4j
 public class NewsController {
 
 
@@ -199,7 +200,9 @@ public class NewsController {
                                                        int sort,
                                              @RequestParam MultipartFile file) throws IOException {
 
+        log.info("sort before {}", sort);
         if (sort <= 0) sort = Integer.MAX_VALUE;
+        log.info("sort after {}", sort);
         //Set<Hashtag> hashtags = new HashSet<>();
         //for (Long tag : hashtagid) hashtagRepo.findById(tag).ifPresent(hashtags::add);
 
@@ -210,7 +213,7 @@ public class NewsController {
             carRepo.findById(carid).ifPresent(car1 -> car[0] =car1);
 
 
-        News news = new News(title,titleGEO,displayText,displayTextGEO,text,textGEO,paths.get("image"),paths.get("thumbnail"),prom, share,sort,car[0]);
+        News news = new News(title,titleGEO,displayText,displayTextGEO,text,textGEO,paths.get("image"),paths.get("thumbnail"),prom, share,Integer.MAX_VALUE,car[0]);
         String slug = newsService.makeSlug(slugUrl);
         if (slug.equals("0"))
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("slugURL შეიცავს არალათინურ ასოებს");
@@ -220,7 +223,7 @@ public class NewsController {
 
 
         news.setSlugUrl(slug);
-
+        log.info("saving sort {}", news.getSort());
         newsRepo.save(news);
 
         return ResponseEntity.ok(carBuildService.jsonFilter(JSON_FILTER_NAME,news));
@@ -346,8 +349,7 @@ public class NewsController {
 
         //for (Long tagId : hashtagid) hashtagRepo.findById(tagId).ifPresent(hashtags::add);
 
-
-        News updatedNews = new News(title, titleGEO, displayText, displayTextGEO, text, textGEO, prom, share,sort,slugUrl);
+        News updatedNews = new News(title, titleGEO, displayText, displayTextGEO, text, textGEO, prom, share,Integer.MAX_VALUE,slugUrl);
         return newsService.newsUpdate(id, updatedNews, file, carid);
     }
 }

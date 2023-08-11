@@ -11,4 +11,6 @@ public interface ComplectCompareRepo extends JpaRepository<ComplectCompare, Long
 
     @Query(value = "select * from complect_compare where car_id = :carId", nativeQuery = true)
     Optional<ComplectCompare> findByCarId(@Param("carId") Long carId);
+
+
 }

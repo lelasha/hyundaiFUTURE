@@ -9,6 +9,7 @@ import com.web.hyundai.model.car.modif.ComplectInterier;
 import com.web.hyundai.model.car.modif.web.AfterComplectWeb;
 import com.web.hyundai.model.car.modif.web.SingleComplectWeb;
 import com.web.hyundai.repo.car.CarColorRepo;
+import com.web.hyundai.repo.car.EngineRepo;
 import com.web.hyundai.repo.car.Photo360Repo;
 import com.web.hyundai.repo.car.modif.CarComplectRepo;
 import com.web.hyundai.repo.car.modif.CarTireRepo;
@@ -45,7 +46,7 @@ public class ComplectService {
 
     //todo frontma gmamomayolos photo360
     public ResponseEntity<?> createAfterComplect(String lang, Long complectid, Long photo360id, Long tireid, ArrayList<Long> featureList) {
-        Optional<CarComplect> complect = carComplectRepo.findById(complectid);
+        Optional<CarComplect> complect = carComplectRepo.findByEngineId(complectid);
         Optional<Photo360> photo360 = photo360Repo.findById(photo360id);
         Optional<CarTire> tire = carTireRepo.findById(tireid);
         if (photo360.isPresent() && tire.isPresent() && complect.isPresent()) {
@@ -86,16 +87,16 @@ public class ComplectService {
     }
 
 
-    public ResponseEntity<?> createSingleComplect(String lang, Long complectid) {
+    public ResponseEntity<?> createSingleComplect(String lang, Long engineId) {
 
-        Optional<CarComplect> complect = carComplectRepo.findById(complectid);
+        Optional<CarComplect> complect = carComplectRepo.findByEngineId(engineId);
         SingleComplectWeb singleComplectWeb = new SingleComplectWeb();
         if (complect.isPresent()) {
 
 
             return complect.map(carComplect -> {
 
-                complectInterierRepo.findByComplectId(complectid).ifPresent(singleComplectWeb::setComplectInterier);
+                complectInterierRepo.findByComplectId(carComplect.getId()).ifPresent(singleComplectWeb::setComplectInterier);
                 singleComplectWeb.setComplectid(carComplect.getId());
                 singleComplectWeb.setEngineid(carComplect.getEngine().getId());
                 singleComplectWeb.setPhoto360(photo360Repo.findAllByComplectId(carComplect.getId()));
